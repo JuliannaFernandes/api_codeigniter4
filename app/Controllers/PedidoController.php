@@ -137,21 +137,25 @@ class PedidoController extends ResourceController
         }
 
         $produtoModel = new \App\Models\Produto();
+        $pedido = $this->model->find($id);
         $produto = $produtoModel->find($this->request->getVar('produto_id'));
 
         if (!$produto) {
             return $this->failNotFound('Produto não encontrado');
         }
 
-        if ($produto['quantidade'] < $this->request->getVar('quantidade')) {
+        $originalQuantidade = $pedido['quantidade'];
+        $pedidoQuantidade = $this->request->getVar('quantidade');
+        $quantidadeDiferenca = $originalQuantidade - $pedidoQuantidade;
+
+        if ($produto['quantidade'] + $quantidadeDiferenca < 0) {
             return $this->fail('Quantidade indisponível');
         }
 
-        $quantidade = $this->request->getVar('quantidade');
-        $valor_total = $produto['preco'] * $quantidade;
+        $valor_total = $produto['preco'] * $pedidoQuantidade;
 
         $produtoModel->update($produto['id'], [
-            'quantidade' => $produto['quantidade'] - $quantidade,
+            'quantidade' => $produto['quantidade'] + $quantidadeDiferenca,
         ]);
 
         $status = $this->request->getVar('status') ?: 'em aberto';
@@ -159,7 +163,7 @@ class PedidoController extends ResourceController
         $this->model->update($id, [
             'cliente_id' => esc($this->request->getVar('cliente_id')),
             'produto_id' => esc($this->request->getVar('produto_id')),
-            'quantidade' => esc($this->request->getVar('quantidade')),
+            'quantidade' => esc($pedidoQuantidade),
             'valor_total' => esc($valor_total),
             'status' => esc($status),
         ]);
