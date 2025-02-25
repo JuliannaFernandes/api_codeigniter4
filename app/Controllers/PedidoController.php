@@ -122,7 +122,53 @@ class PedidoController extends ResourceController
      */
     public function update($id = null)
     {
-        //
+        $rules = $this->validate([
+            'cliente_id' => 'required|integer',
+            'produto_id' => 'required|integer',
+            'quantidade' => 'required|integer',
+        ]);
+
+        if (!$rules) {
+            $response = [
+                'message' => 'Erro ao atualizar pedido',
+                'errors' => $this->validator->getErrors(),
+            ];
+            return $this->failValidationErrors($response, 400);
+        }
+
+        $produtoModel = new \App\Models\Produto();
+        $produto = $produtoModel->find($this->request->getVar('produto_id'));
+
+        if (!$produto) {
+            return $this->failNotFound('Produto não encontrado');
+        }
+
+        if ($produto['quantidade'] < $this->request->getVar('quantidade')) {
+            return $this->fail('Quantidade indisponível');
+        }
+
+        $quantidade = $this->request->getVar('quantidade');
+        $valor_total = $produto['preco'] * $quantidade;
+
+        $produtoModel->update($produto['id'], [
+            'quantidade' => $produto['quantidade'] - $quantidade,
+        ]);
+
+        $status = $this->request->getVar('status') ?: 'em aberto';
+
+        $this->model->update($id, [
+            'cliente_id' => esc($this->request->getVar('cliente_id')),
+            'produto_id' => esc($this->request->getVar('produto_id')),
+            'quantidade' => esc($this->request->getVar('quantidade')),
+            'valor_total' => esc($valor_total),
+            'status' => esc($status),
+        ]);
+
+        $response = [
+            'message' => 'Pedido atualizado com sucesso',
+        ];
+
+        return $this->respondCreated($response, 200);
     }
 
     /**
