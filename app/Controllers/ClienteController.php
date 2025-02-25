@@ -18,7 +18,7 @@ class ClienteController extends ResourceController
     {
         $data = [
             'message' => 'success',
-            'data_cliente' => $this->model->findAll(),
+            'data_cliente' => $this->model->orderBy('id', 'DESC')->findAll(),
         ];
 
         return $this->respond($data);
@@ -53,7 +53,29 @@ class ClienteController extends ResourceController
      */
     public function create()
     {
-        //
+        $rules = $this->validate([
+            'nome_razao_social' => 'required',
+            'cpf_cnpj' => 'required|is_unique[cliente.cpf_cnpj]',
+        ]);
+
+      if (!$rules) {
+          $response = [
+              'message' => 'Erro ao cadastrar cliente',
+              'errors' => $this->validator->getErrors(),
+          ];
+          return $this->failValidationErrors($response, 400);
+      }
+        $this->model->insert([
+            'nome_razao_social' => esc($this->request->getVar('nome_razao_social')),
+            'cpf_cnpj' => esc($this->request->getVar('cpf_cnpj')),
+        ]);
+
+        $response = [
+            'message' => 'Cliente cadastrado com sucesso',
+            'data' => $this->request->getVar(),
+        ];
+
+        return $this->respondCreated($response);
     }
 
     /**

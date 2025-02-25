@@ -8,3 +8,4 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'Home::index');
 
 $routes->get('cliente', 'ClienteController::index');
+$routes->post('cliente', 'ClienteController::create');
