@@ -53,7 +53,52 @@ class PedidoController extends ResourceController
      */
     public function create()
     {
-        //
+        $rules = $this->validate([
+            'cliente_id' => 'required|integer',
+            'produto_id' => 'required|integer',
+            'quantidade' => 'required|integer',
+        ]);
+
+        if (!$rules) {
+            $response = [
+                'message' => 'Erro ao cadastrar pedido',
+                'errors' => $this->validator->getErrors(),
+            ];
+            return $this->failValidationErrors($response, 400);
+        }
+
+        $produtoModel = new \App\Models\Produto();
+        $produto = $produtoModel->find($this->request->getVar('produto_id'));
+
+        if (!$produto) {
+            return $this->failNotFound('Produto não encontrado');
+        }
+
+        if ($produto['quantidade'] < $this->request->getVar('quantidade')) {
+            return $this->fail('Quantidade indisponível');
+        }
+
+        $quantidade = $this->request->getVar('quantidade');
+        $valor_total = $produto['preco'] * $quantidade;
+
+        $produtoModel->update($produto['id'], [
+            'quantidade' => $produto['quantidade'] - $quantidade,
+        ]);
+
+        $this->model->insert([
+            'cliente_id' => esc($this->request->getVar('cliente_id')),
+            'produto_id' => esc($this->request->getVar('produto_id')),
+            'quantidade' => esc($this->request->getVar('quantidade')),
+            'valor_total' => esc($valor_total),
+            'status' => 'em aberto',
+        ]);
+
+        $response = [
+            'message' => 'Pedido cadastrado com sucesso',
+            'data' => $this->request->getVar(),
+        ];
+
+        return $this->respondCreated($response, 200);
     }
 
     /**

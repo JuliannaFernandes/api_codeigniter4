@@ -67,6 +67,7 @@ class ProdutoController extends ResourceController
             ];
             return $this->failValidationErrors($response, 400);
         }
+
         $this->model->insert([
             'nome_produto' => esc($this->request->getVar('nome_produto')),
             'descricao' => esc($this->request->getVar('descricao')),
