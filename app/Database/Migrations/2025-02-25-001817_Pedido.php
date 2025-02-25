@@ -21,9 +21,26 @@ class Pedido extends Migration
                 'unsigned' => true,
                 'null' => false,
             ],
+            'produto_id' => [
+                'type' => 'INT',
+                'constraint' => 5,
+                'unsigned' => true,
+                'null' => false,
+            ],
+            'quantidade' => [
+                'type' => 'INT',
+                'constraint' => 5,
+                'unsigned' => true,
+            ],
+            'valor_total' => [
+                'type' => 'DECIMAL',
+                'constraint' => '10,2',
+                'null' => false,
+            ],
             'status' => [
                 'type' => 'ENUM',
                 'constraint' => ['em aberto', 'pago', 'cancelado'],
+                'default' => 'em aberto',
                 'null' => false,
             ],
             'created_at' => [
@@ -37,6 +54,7 @@ class Pedido extends Migration
         ]);
         $this->forge->addKey('id', true);
         $this->forge->addForeignKey('cliente_id', 'cliente', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('produto_id', 'produto', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('pedido');
     }
 

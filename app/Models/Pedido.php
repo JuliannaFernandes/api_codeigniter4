@@ -11,7 +11,13 @@ class Pedido extends Model
     protected $useAutoIncrement = true;
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = [];
+    protected $allowedFields    = [
+        'cliente_id',
+        'produto_id',
+        'quantidade',
+        'valor_total',
+        'status',
+    ];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
