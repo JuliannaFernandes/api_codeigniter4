@@ -140,6 +140,12 @@ class ProdutoController extends ResourceController
      */
     public function delete($id = null)
     {
-        //
+        $this->model->delete($id);
+
+        $response = [
+            'message' => 'Produto deletado com sucesso',
+        ];
+
+        return $this->respondDeleted($response, 200);
     }
 }
