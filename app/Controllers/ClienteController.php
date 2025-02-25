@@ -132,6 +132,12 @@ class ClienteController extends ResourceController
      */
     public function delete($id = null)
     {
-        //
+        $this->model->delete($id);
+
+        $response = [
+            'message' => 'Cliente deletado com sucesso',
+        ];
+
+        return $this->respondDeleted($response, 200);
     }
 }

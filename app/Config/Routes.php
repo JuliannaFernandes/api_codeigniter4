@@ -10,3 +10,4 @@ $routes->get('/', 'Home::index');
 $routes->get('cliente', 'ClienteController::index');
 $routes->post('cliente', 'ClienteController::create');
 $routes->put('cliente/(:num)', 'ClienteController::update/$1');
+$routes->delete('cliente/(:num)', 'ClienteController::delete/$1');
