@@ -14,6 +14,7 @@ $routes->delete('cliente/(:num)', 'ClienteController::delete/$1');
 
 $routes->get('produto', 'ProdutoController::index');
 $routes->post('produto', 'ProdutoController::create');
+$routes->put('produto/(:num)', 'ProdutoController::update/$1');
 
 
 

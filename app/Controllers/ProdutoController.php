@@ -79,7 +79,7 @@ class ProdutoController extends ResourceController
             'data' => $this->request->getVar(),
         ];
 
-        return $this->respondCreated($response);
+        return $this->respondCreated($response, 200);
     }
 
     /**
@@ -103,7 +103,32 @@ class ProdutoController extends ResourceController
      */
     public function update($id = null)
     {
-        //
+        $rules = $this->validate([
+            'nome_produto' => 'required',
+            'descricao' => 'required',
+            'preco' => 'required|decimal',
+            'quantidade' => 'required|integer',
+        ]);
+
+        if (!$rules) {
+            $response = [
+                'message' => 'Erro ao atualizar produto',
+                'errors' => $this->validator->getErrors(),
+            ];
+            return $this->failValidationErrors($response, 400);
+        }
+        $this->model->update($id, [
+            'nome_produto' => esc($this->request->getVar('nome_produto')),
+            'descricao' => esc($this->request->getVar('descricao')),
+            'preco' => esc($this->request->getVar('preco')),
+            'quantidade' => esc($this->request->getVar('quantidade')),
+        ]);
+
+        $response = [
+            'message' => 'Produto atualizado com sucesso',
+        ];
+
+        return $this->respond($response);
     }
 
     /**
