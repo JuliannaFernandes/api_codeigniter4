@@ -17,5 +17,7 @@ $routes->post('produto', 'ProdutoController::create');
 $routes->put('produto/(:num)', 'ProdutoController::update/$1');
 $routes->delete('produto/(:num)', 'ProdutoController::delete/$1');
 
+$routes->get('pedido', 'PedidoController::index');
+
 
 
