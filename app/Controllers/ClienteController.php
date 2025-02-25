@@ -99,7 +99,28 @@ class ClienteController extends ResourceController
      */
     public function update($id = null)
     {
-        //
+        $rules = $this->validate([
+            'nome_razao_social' => 'required',
+            'cpf_cnpj' => 'is_unique[cliente.cpf_cnpj]',
+        ]);
+
+        if (!$rules) {
+            $response = [
+                'message' => 'Erro ao atualizar cliente',
+                'errors' => $this->validator->getErrors(),
+            ];
+            return $this->failValidationErrors($response, 400);
+        }
+        $this->model->update($id,[
+            'nome_razao_social' => esc($this->request->getVar('nome_razao_social')),
+            'cpf_cnpj' => esc($this->request->getVar('cpf_cnpj')),
+        ]);
+
+        $response = [
+            'message' => 'Cliente atualizado com sucesso',
+        ];
+
+        return $this->respond($response,200);
     }
 
     /**
