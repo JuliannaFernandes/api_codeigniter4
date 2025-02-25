@@ -180,6 +180,25 @@ class PedidoController extends ResourceController
      */
     public function delete($id = null)
     {
-        //
+        $pedido = $this->model->find($id);
+
+        if (!$pedido) {
+            return $this->failNotFound('Pedido não encontrado');
+        }
+
+        $produtoModel = new \App\Models\Produto();
+        $produto = $produtoModel->find($pedido['produto_id']);
+
+        $produtoModel->update($produto['id'], [
+            'quantidade' => $produto['quantidade'] + $pedido['quantidade'],
+        ]);
+
+        $this->model->delete($id);
+
+        $response = [
+            'message' => 'Pedido deletado com sucesso',
+        ];
+
+        return $this->respondDeleted($response);
     }
 }

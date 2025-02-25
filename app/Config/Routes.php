@@ -20,6 +20,7 @@ $routes->delete('produto/(:num)', 'ProdutoController::delete/$1');
 $routes->get('pedido', 'PedidoController::index');
 $routes->post('pedido', 'PedidoController::create');
 $routes->put('pedido/(:num)', 'PedidoController::update/$1');
+$routes->delete('pedido/(:num)', 'PedidoController::delete/$1');
 
 
 
