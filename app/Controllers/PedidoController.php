@@ -16,9 +16,18 @@ class PedidoController extends ResourceController
      */
     public function index()
     {
+        $filters = $this->request->getGet();
+        $query = $this->model->orderBy('id', 'DESC');
+
+        foreach ($filters as $campo => $valor) {
+            if (!empty($valor) && $this->model->db->fieldExists($campo, 'pedido')) {
+                $query = $query->like($campo, $valor);
+            }
+        }
+
         $data = [
             'message' => 'success',
-            'data_pedido' => $this->model->orderBy('id', 'DESC')->paginate(1),
+            'data_pedido' => $this->model->orderBy('id', 'DESC')->paginate(10),
             'pagination' => [
                 'current_page' => $this->model->pager->getCurrentPage(),
                 'page_count' => $this->model->pager->getPageCount(),
