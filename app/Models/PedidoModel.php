@@ -4,19 +4,23 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class Produto extends Model
+class PedidoModel extends Model
 {
-    protected $table            = 'produto';
+    protected $table            = 'pedido';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'nome_produto',
-        'descricao',
-        'preco',
+        'cliente_id',
+        'produto_id',
         'quantidade',
+        'valor_total',
+        'status',
     ];
+
+    protected bool $allowEmptyInserts = false;
+    protected bool $updateOnlyChanged = true;
 
     protected array $casts = [];
     protected array $castHandlers = [];
@@ -26,5 +30,6 @@ class Produto extends Model
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
+    protected $deletedField  = 'deleted_at';
 
 }

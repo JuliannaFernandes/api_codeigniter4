@@ -7,7 +7,7 @@ use CodeIgniter\RESTful\ResourceController;
 
 class PedidoController extends ResourceController
 {
-    protected $modelName = 'App\Models\Pedido';
+    protected $modelName = 'App\Models\PedidoModel';
     protected $format    = 'json';
     /**
      * Return an array of resource objects, themselves in array format.
@@ -61,7 +61,7 @@ class PedidoController extends ResourceController
             return $this->failValidationErrors($response, 400);
         }
 
-        $produtoModel = new \App\Models\Produto();
+        $produtoModel = new \App\Models\ProdutoModel();
         $produto = $produtoModel->find($this->request->getVar('produto_id'));
 
         if (!$produto) {
@@ -118,7 +118,7 @@ class PedidoController extends ResourceController
             return $this->failValidationErrors($response, 400);
         }
 
-        $produtoModel = new \App\Models\Produto();
+        $produtoModel = new \App\Models\ProdutoModel();
         $pedido = $this->model->find($id);
         $produto = $produtoModel->find($this->request->getVar('produto_id'));
 
@@ -172,7 +172,7 @@ class PedidoController extends ResourceController
             return $this->failNotFound('Pedido não encontrado');
         }
 
-        $produtoModel = new \App\Models\Produto();
+        $produtoModel = new \App\Models\ProdutoModel();
         $produto = $produtoModel->find($pedido['produto_id']);
 
         $produtoModel->update($produto['id'], [

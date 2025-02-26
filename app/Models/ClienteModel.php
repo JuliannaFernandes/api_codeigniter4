@@ -4,19 +4,16 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class Pedido extends Model
+class ClienteModel extends Model
 {
-    protected $table            = 'pedido';
+    protected $table            = 'cliente';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'cliente_id',
-        'produto_id',
-        'quantidade',
-        'valor_total',
-        'status',
+        'nome_razao_social',
+        'cpf_cnpj',
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -30,6 +27,5 @@ class Pedido extends Model
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
-    protected $deletedField  = 'deleted_at';
 
 }

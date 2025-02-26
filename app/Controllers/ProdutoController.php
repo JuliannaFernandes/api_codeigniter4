@@ -7,7 +7,7 @@ use CodeIgniter\RESTful\ResourceController;
 
 class ProdutoController extends ResourceController
 {
-    protected $modelName = 'App\Models\Produto';
+    protected $modelName = 'App\Models\ProdutoModel';
     protected $format    = 'json';
     /**
      * Return an array of resource objects, themselves in array format.

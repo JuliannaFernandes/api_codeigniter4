@@ -4,20 +4,19 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class Cliente extends Model
+class ProdutoModel extends Model
 {
-    protected $table            = 'cliente';
+    protected $table            = 'produto';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'nome_razao_social',
-        'cpf_cnpj',
+        'nome_produto',
+        'descricao',
+        'preco',
+        'quantidade',
     ];
-
-    protected bool $allowEmptyInserts = false;
-    protected bool $updateOnlyChanged = true;
 
     protected array $casts = [];
     protected array $castHandlers = [];

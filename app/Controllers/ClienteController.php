@@ -7,7 +7,7 @@ use CodeIgniter\RESTful\ResourceController;
 
 class ClienteController extends ResourceController
 {
-    protected $modelName = 'App\Models\Cliente';
+    protected $modelName = 'App\Models\ClienteModel';
     protected $format    = 'json';
     /**
      * Return an array of resource objects, themselves in array format.
@@ -39,7 +39,6 @@ class ClienteController extends ResourceController
 
         return $this->respond($data);
     }
-
 
     /**
      * Create a new resource object, from "posted" parameters.
