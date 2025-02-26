@@ -18,7 +18,14 @@ class ProdutoController extends ResourceController
     {
         $data = [
             'message' => 'success',
-            'data_cliente' => $this->model->orderBy('id', 'DESC')->findAll(),
+            'data_cliente' => $this->model->orderBy('id', 'DESC')->paginate(10),
+            'pagination' => [
+                'current_page' => $this->model->pager->getCurrentPage(),
+                'page_count' => $this->model->pager->getPageCount(),
+                'total_items' => $this->model->pager->getTotal(),
+                'next' => $this->model->pager->getNextPageURI(),
+                'previous' => $this->model->pager->getPreviousPageURI(),
+            ]
         ];
 
         return $this->respond($data);
