@@ -16,9 +16,18 @@ class ClienteController extends ResourceController
      */
     public function index()
     {
+        $filters = $this->request->getGet();
+        $query = $this->model->orderBy('id', 'DESC');
+
+        foreach ($filters as $campo => $valor) {
+            if (!empty($valor) && $this->model->db->fieldExists($campo, 'cliente')) {
+                $query = $query->like($campo, $valor);
+            }
+        }
+
         $data = [
             'message' => 'success',
-            'data_cliente' => $this->model->orderBy('id', 'DESC')->paginate(10),
+            'data_cliente' => $query->paginate(10),
             'pagination' => [
                 'current_page' => $this->model->pager->getCurrentPage(),
                 'page_count' => $this->model->pager->getPageCount(),
@@ -30,6 +39,7 @@ class ClienteController extends ResourceController
 
         return $this->respond($data);
     }
+
 
     /**
      * Create a new resource object, from "posted" parameters.
