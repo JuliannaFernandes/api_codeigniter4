@@ -19,6 +19,29 @@ class PedidoModel extends Model
         'status',
     ];
 
+    //Validation
+    protected $validationRules = [
+        'cliente_id' => 'required|integer',
+        'produto_id' => 'required|integer',
+        'quantidade' => 'required|integer',
+    ];
+
+    //Validations messages
+    protected $validationMessages = [
+        'cliente_id' => [
+            'required' => 'O campo cliente_id é obrigatório.',
+            'integer' => 'O campo cliente_id deve ser um número.',
+        ],
+        'produto_id' => [
+            'required' => 'O campo produto_id é obrigatório.',
+            'integer' => 'O campo produto_id deve ser um número.',
+        ],
+        'quantidade' => [
+            'required' => 'O campo quantidade é obrigatório.',
+            'integer' => 'O campo quantidade deve ser um número.',
+        ],
+    ];
+
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
 

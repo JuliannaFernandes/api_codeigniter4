@@ -47,31 +47,26 @@ class ProdutoController extends ResourceController
      */
     public function create()
     {
-        $rules = $this->validate([
-            'nome_produto' => 'required',
-            'descricao' => 'required',
-            'preco' => 'required|decimal',
-            'quantidade' => 'required|integer',
-        ]);
+       $data = (array) $this->request->getVar();
 
-        if (!$rules) {
-            $response = [
-                'message' => 'Erro ao cadastrar produto',
-                'errors' => $this->validator->getErrors(),
-            ];
-            return $this->failValidationErrors($response, 400);
-        }
+       if(!$this->model->validate($data)){
+           $response = [
+               'message' => 'Erro ao cadastrar produto',
+               'errors' => $this->model->errors(),
+           ];
+           return $this->failValidationErrors($response, 400);
+         }
 
-        $this->model->insert([
-            'nome_produto' => esc($this->request->getVar('nome_produto')),
-            'descricao' => esc($this->request->getVar('descricao')),
-            'preco' => esc($this->request->getVar('preco')),
-            'quantidade' => esc($this->request->getVar('quantidade')),
-        ]);
+      $this->model->insert([
+          'nome_produto' => esc($data['nome_produto']),
+          'descricao' => esc($data['descricao']),
+          'preco' => esc($data['preco']),
+          'quantidade' => esc($data['quantidade']),
+      ]);
 
         $response = [
             'message' => 'Produto cadastrado com sucesso',
-            'data' => $this->request->getVar(),
+            'data' => $data,
         ];
 
         return $this->respondCreated($response, 200);
@@ -86,32 +81,29 @@ class ProdutoController extends ResourceController
      */
     public function update($id = null)
     {
-        $rules = $this->validate([
-            'nome_produto' => 'required',
-            'descricao' => 'required',
-            'preco' => 'required|decimal',
-            'quantidade' => 'required|integer',
-        ]);
+        $data = (array) $this->request->getVar();
 
-        if (!$rules) {
+        if (!$this->model->validate($data)) {
             $response = [
                 'message' => 'Erro ao atualizar produto',
-                'errors' => $this->validator->getErrors(),
+                'errors' => $this->model->errors(),
             ];
             return $this->failValidationErrors($response, 400);
         }
-        $this->model->update($id, [
-            'nome_produto' => esc($this->request->getVar('nome_produto')),
-            'descricao' => esc($this->request->getVar('descricao')),
-            'preco' => esc($this->request->getVar('preco')),
-            'quantidade' => esc($this->request->getVar('quantidade')),
+
+        $this->model->update($id,[
+            'nome_produto' => esc($data['nome_produto']),
+            'descricao' => esc($data['descricao']),
+            'preco' => esc($data['preco']),
+            'quantidade' => esc($data['quantidade']),
         ]);
 
         $response = [
             'message' => 'Produto atualizado com sucesso',
+            'data' => $data,
         ];
 
-        return $this->respond($response);
+        return $this->respond($response, 200);
     }
 
     /**

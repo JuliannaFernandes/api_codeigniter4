@@ -47,32 +47,32 @@ class PedidoController extends ResourceController
      */
     public function create()
     {
-        $rules = $this->validate([
-            'cliente_id' => 'required|integer',
-            'produto_id' => 'required|integer',
-            'quantidade' => 'required|integer',
-        ]);
+        $data = (array) $this->request->getVar();
+        $clienteModel = new \App\Models\ClienteModel();
+        $produtoModel = new \App\Models\ProdutoModel();
 
-        if (!$rules) {
-            $response = [
+        if (!$this->model->validate($data)) {
+            return $this->failValidationErrors([
                 'message' => 'Erro ao cadastrar pedido',
-                'errors' => $this->validator->getErrors(),
-            ];
-            return $this->failValidationErrors($response, 400);
+                'errors' => $this->model->errors(),
+            ], 400);
         }
 
-        $produtoModel = new \App\Models\ProdutoModel();
-        $produto = $produtoModel->find($this->request->getVar('produto_id'));
+        $cliente = $clienteModel->find($data['cliente_id']);
+        if (!$cliente) {
+            return $this->failNotFound('Cliente não encontrado');
+        }
 
+        $produto = $produtoModel->find($data['produto_id']);
         if (!$produto) {
             return $this->failNotFound('Produto não encontrado');
         }
 
-        if ($produto['quantidade'] < $this->request->getVar('quantidade')) {
+        if ($produto['quantidade'] < $data['quantidade']) {
             return $this->fail('Quantidade indisponível');
         }
 
-        $quantidade = $this->request->getVar('quantidade');
+        $quantidade = $data['quantidade'];
         $valor_total = $produto['preco'] * $quantidade;
 
         $produtoModel->update($produto['id'], [
@@ -80,19 +80,19 @@ class PedidoController extends ResourceController
         ]);
 
         $this->model->insert([
-            'cliente_id' => esc($this->request->getVar('cliente_id')),
-            'produto_id' => esc($this->request->getVar('produto_id')),
-            'quantidade' => esc($this->request->getVar('quantidade')),
+            'cliente_id' => esc($data['cliente_id']),
+            'produto_id' => esc($data['produto_id']),
+            'quantidade' => esc($quantidade),
             'valor_total' => esc($valor_total),
             'status' => 'em aberto',
         ]);
 
         $response = [
             'message' => 'Pedido cadastrado com sucesso',
-            'data' => $this->request->getVar(),
+            'data' => $data,
         ];
 
-        return $this->respondCreated($response, 200);
+        return $this->respondCreated($response);
     }
 
     /**
@@ -104,57 +104,70 @@ class PedidoController extends ResourceController
      */
     public function update($id = null)
     {
-        $rules = $this->validate([
-            'cliente_id' => 'required|integer',
-            'produto_id' => 'required|integer',
-            'quantidade' => 'required|integer',
-        ]);
+        $data = (array) $this->request->getVar();
 
-        if (!$rules) {
-            $response = [
+        $clienteModel = new \App\Models\ClienteModel();
+        $produtoModel = new \App\Models\ProdutoModel();
+
+        if (!$this->model->validate($data)) {
+            return $this->failValidationErrors([
                 'message' => 'Erro ao atualizar pedido',
-                'errors' => $this->validator->getErrors(),
-            ];
-            return $this->failValidationErrors($response, 400);
+                'errors' => $this->model->errors(),
+            ], 400);
         }
 
-        $produtoModel = new \App\Models\ProdutoModel();
-        $pedido = $this->model->find($id);
-        $produto = $produtoModel->find($this->request->getVar('produto_id'));
+        if ($data['quantidade'] <= 0) {
+        return $this->failValidationErrors([
+            'message' => 'A quantidade deve ser maior que zero',
+        ], 400);
+        }
 
+        $cliente = $clienteModel->find($data['cliente_id']);
+        if (!$cliente) {
+            return $this->failNotFound('Cliente não encontrado');
+        }
+
+        $produto = $produtoModel->find($data['produto_id']);
         if (!$produto) {
             return $this->failNotFound('Produto não encontrado');
         }
 
-        $originalQuantidade = $pedido['quantidade'];
-        $pedidoQuantidade = $this->request->getVar('quantidade');
-        $quantidadeDiferenca = $originalQuantidade - $pedidoQuantidade;
-
-        if ($produto['quantidade'] + $quantidadeDiferenca < 0) {
-            return $this->fail('Quantidade indisponível');
+        $pedido = $this->model->find($id);
+        if (!$pedido) {
+            return $this->failNotFound('Pedido não encontrado');
         }
 
-        $valor_total = $produto['preco'] * $pedidoQuantidade;
+        $statusValidos = ['em aberto', 'pago', 'cancelado'];
+        if (isset($data['status']) && !in_array($data['status'], $statusValidos)) {
+            return $this->fail('Esse status não está disponível, as opções são: em aberto, pago ou cancelado');
+        }
+
+        $originalQuantidade = $pedido['quantidade'];
+        $pedidoQuantidade = $data['quantidade'];
+        $quantidadeDiferenca = $pedidoQuantidade - $originalQuantidade;
+
+        if ($produto['quantidade'] < $quantidadeDiferenca) {
+            return $this->fail('Quantidade indisponível no estoque');
+        }
 
         $produtoModel->update($produto['id'], [
-            'quantidade' => $produto['quantidade'] + $quantidadeDiferenca,
+            'quantidade' => $produto['quantidade'] - $quantidadeDiferenca,
         ]);
 
-        $status = $this->request->getVar('status') ?: 'em aberto';
+        $valorTotal = $produto['preco'] * $pedidoQuantidade;
 
         $this->model->update($id, [
-            'cliente_id' => esc($this->request->getVar('cliente_id')),
-            'produto_id' => esc($this->request->getVar('produto_id')),
-            'quantidade' => esc($pedidoQuantidade),
-            'valor_total' => esc($valor_total),
-            'status' => esc($status),
+            'cliente_id'  => esc($data['cliente_id']),
+            'produto_id'  => esc($data['produto_id']),
+            'quantidade'  => esc($pedidoQuantidade),
+            'valor_total' => esc($valorTotal),
+            'status'      => esc($data['status'] ?? 'em aberto'),
         ]);
 
-        $response = [
+        return $this->respond([
             'message' => 'Pedido atualizado com sucesso',
-        ];
-
-        return $this->respondCreated($response, 200);
+            'data'    => $data,
+        ], 200);
     }
 
     /**

@@ -47,29 +47,27 @@ class ClienteController extends ResourceController
      */
     public function create()
     {
-        $rules = $this->validate([
-            'nome_razao_social' => 'required',
-            'cpf_cnpj' => 'required|is_unique[cliente.cpf_cnpj]',
-        ]);
+        $data = (array) $this->request->getVar();
 
-      if (!$rules) {
-          $response = [
-              'message' => 'Erro ao cadastrar cliente',
-              'errors' => $this->validator->getErrors(),
-          ];
-          return $this->failValidationErrors($response, 400);
-      }
+        if (!$this->model->validate($data)) {
+            $response = [
+                'message' => 'Erro ao cadastrar cliente',
+                'errors' => $this->model->errors(),
+            ];
+            return $this->failValidationErrors($response, 400);
+        }
+
         $this->model->insert([
-            'nome_razao_social' => esc($this->request->getVar('nome_razao_social')),
-            'cpf_cnpj' => esc($this->request->getVar('cpf_cnpj')),
+            'nome_razao_social' => esc($data['nome_razao_social']),
+                'cpf_cnpj' => esc($data['cpf_cnpj']),
         ]);
 
         $response = [
             'message' => 'Cliente cadastrado com sucesso',
-            'data' => $this->request->getVar(),
+            'data' => $data,
         ];
 
-        return $this->respondCreated($response);
+        return $this->respondCreated($response, 200);
     }
 
     /**
@@ -81,21 +79,19 @@ class ClienteController extends ResourceController
      */
     public function update($id = null)
     {
-        $rules = $this->validate([
-            'nome_razao_social' => 'required',
-            'cpf_cnpj' => 'is_unique[cliente.cpf_cnpj]',
-        ]);
+        $data = (array) $this->request->getVar();
 
-        if (!$rules) {
+        if (!$this->model->validate($data)) {
             $response = [
                 'message' => 'Erro ao atualizar cliente',
-                'errors' => $this->validator->getErrors(),
+                'errors' => $this->model->errors(),
             ];
             return $this->failValidationErrors($response, 400);
         }
-        $this->model->update($id,[
-            'nome_razao_social' => esc($this->request->getVar('nome_razao_social')),
-            'cpf_cnpj' => esc($this->request->getVar('cpf_cnpj')),
+
+        $this->model->update($id, [
+            'nome_razao_social' => esc($data['nome_razao_social']),
+            'cpf_cnpj' => esc($data['cpf_cnpj']),
         ]);
 
         $response = [
