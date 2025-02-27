@@ -110,6 +110,13 @@ class ClienteController extends ResourceController
      */
     public function delete($id = null)
     {
+        $pedidoModel = new \App\Models\PedidoModel();
+        $pedido = $pedidoModel->where('cliente_id', $id)->countAllResults();
+
+        if ($pedido) {
+            return $this->fail('Cliente possui pedidos cadastrados' );
+        }
+
         $this->model->delete($id);
 
         $response = [

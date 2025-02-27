@@ -115,6 +115,13 @@ class ProdutoController extends ResourceController
      */
     public function delete($id = null)
     {
+        $pedidoModel = new \App\Models\PedidoModel();
+        $pedido = $pedidoModel->where('produto_id', $id)->first();
+
+        if ($pedido) {
+            return $this->fail('Produto não pode ser deletado, pois está associado a um pedido');
+        }
+
         $this->model->delete($id);
 
         $response = [
