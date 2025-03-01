@@ -22,6 +22,6 @@ $routes->post('pedido', 'PedidoController::create');
 $routes->put('pedido/(:num)', 'PedidoController::update/$1');
 $routes->delete('pedido/(:num)', 'PedidoController::delete/$1');
 
-$routes->post("registro", "Registro::index");
-$routes->post("login", "Login::index");
-$routes->get("usuario", "Usuario::index", ['filter' => 'authFilter']);
+$routes->post("registro", "RegistroController::index");
+$routes->post("login", "LoginController::index");
+$routes->get("usuario", "UsuarioController::index", ['filter' => 'authFilter']);

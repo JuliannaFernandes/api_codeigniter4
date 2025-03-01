@@ -6,7 +6,7 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\API\ResponseTrait;
 
-class Usuario extends BaseController
+class UsuarioController extends BaseController
 {
     use ResponseTrait;
 

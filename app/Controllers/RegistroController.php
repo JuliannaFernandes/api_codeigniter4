@@ -6,7 +6,7 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\API\ResponseTrait;
 
-class Registro extends BaseController
+class RegistroController extends BaseController
 {
     use ResponseTrait;
 

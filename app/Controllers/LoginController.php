@@ -7,7 +7,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 use Firebase\JWT\JWT;
 use CodeIgniter\API\ResponseTrait;
 
-class Login extends BaseController
+class LoginController extends BaseController
 {
     use ResponseTrait;
 
