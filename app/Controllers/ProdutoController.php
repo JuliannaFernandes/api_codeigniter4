@@ -8,7 +8,8 @@ use CodeIgniter\RESTful\ResourceController;
 class ProdutoController extends ResourceController
 {
     protected $modelName = 'App\Models\ProdutoModel';
-    protected $format    = 'json';
+    protected $format = 'json';
+
     /**
      * Return an array of resource objects, themselves in array format.
      *
@@ -25,19 +26,24 @@ class ProdutoController extends ResourceController
             }
         }
 
-        $data = [
-            'message' => 'success',
-            'data_produto' => $this->model->orderBy('id', 'DESC')->paginate(10),
-            'pagination' => [
-                'current_page' => $this->model->pager->getCurrentPage(),
-                'page_count' => $this->model->pager->getPageCount(),
-                'total_items' => $this->model->pager->getTotal(),
-                'next' => $this->model->pager->getNextPageURI(),
-                'previous' => $this->model->pager->getPreviousPageURI(),
-            ]
+        $response = [
+            'cabecalho' => [
+                'status' => 200,
+                'menssagem' => 'Dados retornados com sucesso',
+            ],
+            'retorno' => [
+                'dados_produto' => $query->paginate(10),
+                'pagination' => [
+                    'current_page' => $this->model->pager->getCurrentPage(),
+                    'page_count' => $this->model->pager->getPageCount(),
+                    'total_items' => $this->model->pager->getTotal(),
+                    'next' => $this->model->pager->getNextPageURI(),
+                    'previous' => $this->model->pager->getPreviousPageURI(),
+                ]
+            ],
         ];
 
-        return $this->respond($data);
+        return $this->respond($response);
     }
 
     /**
@@ -47,29 +53,40 @@ class ProdutoController extends ResourceController
      */
     public function create()
     {
-       $data = (array) $this->request->getVar();
+        $requestData = $this->request->getJson(true);
 
-       if(!$this->model->validate($data)){
-           $response = [
-               'message' => 'Erro ao cadastrar produto',
-               'errors' => $this->model->errors(),
-           ];
-           return $this->failValidationErrors($response, 400);
-         }
+        if (!isset($requestData['parametros']) || !is_array($requestData['parametros'])) {
+            return $this->failValidationErrors(['menssagem' => 'Parâmetros inválidos'], 400);
+        }
 
-      $this->model->insert([
-          'nome_produto' => esc($data['nome_produto']),
-          'descricao' => esc($data['descricao']),
-          'preco' => esc($data['preco']),
-          'quantidade' => esc($data['quantidade']),
-      ]);
+        $data = $requestData['parametros'];
+
+        if (!$this->model->validate($data)) {
+            $response = [
+                'menssagem' => 'Erro ao cadastrar produto',
+                'errors' => $this->model->errors(),
+            ];
+            return $this->failValidationErrors($response, 400);
+        }
+
+        $this->model->insert([
+            'nome_produto' => esc($data['nome_produto']),
+            'descricao' => esc($data['descricao']),
+            'preco' => esc($data['preco']),
+            'quantidade' => esc($data['quantidade']),
+        ]);
 
         $response = [
-            'message' => 'Produto cadastrado com sucesso',
-            'data' => $data,
+            'cabecalho' => [
+                'status' => 201,
+                'menssagem' => 'Produto cadastrado com sucesso',
+            ],
+            'retorno' => [
+                $data,
+            ],
         ];
 
-        return $this->respondCreated($response, 200);
+        return $this->respondCreated($response);
     }
 
     /**
@@ -81,17 +98,23 @@ class ProdutoController extends ResourceController
      */
     public function update($id = null)
     {
-        $data = (array) $this->request->getVar();
+        $requestData = $this->request->getJSON(true);
+
+        if (!isset($requestData['parametros']) || !is_array($requestData['parametros'])) {
+            return $this->failValidationErrors(['menssagem' => 'Parâmetros inválidos'], 400);
+        }
+
+        $data = $requestData['parametros'];
 
         if (!$this->model->validate($data)) {
             $response = [
-                'message' => 'Erro ao atualizar produto',
+                'menssagem' => 'Erro ao atualizar produto',
                 'errors' => $this->model->errors(),
             ];
             return $this->failValidationErrors($response, 400);
         }
 
-        $this->model->update($id,[
+        $this->model->update($id, [
             'nome_produto' => esc($data['nome_produto']),
             'descricao' => esc($data['descricao']),
             'preco' => esc($data['preco']),
@@ -99,11 +122,16 @@ class ProdutoController extends ResourceController
         ]);
 
         $response = [
-            'message' => 'Produto atualizado com sucesso',
-            'data' => $data,
+            'cabecalho' => [
+                'status' => 200,
+                'menssagem' => 'Produto atualizado com sucesso',
+            ],
+            'retorno' => [
+                $data,
+            ],
         ];
 
-        return $this->respond($response, 200);
+        return $this->respond($response);
     }
 
     /**
@@ -125,7 +153,7 @@ class ProdutoController extends ResourceController
         $this->model->delete($id);
 
         $response = [
-            'message' => 'Produto deletado com sucesso',
+            'menssagem' => 'Produto deletado com sucesso',
         ];
 
         return $this->respondDeleted($response, 200);
