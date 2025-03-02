@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\RESTful\ResourceController;
+use CodeIgniter\View\Table;
 
 class PedidoController extends ResourceController
 {
@@ -27,7 +28,7 @@ class PedidoController extends ResourceController
 
         $data = [
             'message' => 'success',
-            'data_pedido' => $this->model->orderBy('id', 'DESC')->paginate(10),
+            'dados_pedido' => $this->model->orderBy('id', 'DESC')->paginate(10),
             'pagination' => [
                 'current_page' => $this->model->pager->getCurrentPage(),
                 'page_count' => $this->model->pager->getPageCount(),
@@ -47,9 +48,15 @@ class PedidoController extends ResourceController
      */
     public function create()
     {
-        $data = (array) $this->request->getVar();
+        $requestData = $this->request->getJSON(true);
         $clienteModel = new \App\Models\ClienteModel();
         $produtoModel = new \App\Models\ProdutoModel();
+
+        if(!isset($requestData['parametros']) || !is_array($requestData['parametros'])) {
+            return $this->failValidationErrors(['message' => 'Parâmetros inválidos'], 400);
+        }
+
+        $data = $requestData['parametros'];
 
         if (!$this->model->validate($data)) {
             return $this->failValidationErrors([
@@ -88,8 +95,13 @@ class PedidoController extends ResourceController
         ]);
 
         $response = [
-            'message' => 'Pedido cadastrado com sucesso',
-            'data' => $data,
+            'cabecalho' => [
+                'status' => 201,
+                'menssagem' => 'Pedido cadastrado com sucesso',
+            ],
+            'retorno' => [
+                $data,
+            ],
         ];
 
         return $this->respondCreated($response);
@@ -104,10 +116,15 @@ class PedidoController extends ResourceController
      */
     public function update($id = null)
     {
-        $data = (array) $this->request->getVar();
-
+        $requestData = $this->request->getJSON(true);
         $clienteModel = new \App\Models\ClienteModel();
         $produtoModel = new \App\Models\ProdutoModel();
+
+        if (!isset($requestData['parametros']) || !is_array($requestData['parametros'])) {
+            return $this->failValidationErrors(['message' => 'Parâmetros inválidos'], 400);
+        }
+
+        $data = $requestData['parametros'];
 
         if (!$this->model->validate($data)) {
             return $this->failValidationErrors([
@@ -164,10 +181,17 @@ class PedidoController extends ResourceController
             'status'      => esc($data['status'] ?? 'em aberto'),
         ]);
 
-        return $this->respond([
-            'message' => 'Pedido atualizado com sucesso',
-            'data'    => $data,
-        ], 200);
+        $response = [
+            'cabecalho' => [
+                'status' => 201,
+                'menssagem' => 'Pedido atualizado com sucesso',
+            ],
+            'retorno' => [
+                $data,
+            ],
+        ];
+
+        return $this->respond($response);
     }
 
     /**

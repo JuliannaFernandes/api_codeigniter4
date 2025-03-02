@@ -53,7 +53,7 @@ class ProdutoController extends ResourceController
      */
     public function create()
     {
-        $requestData = $this->request->getJson(true);
+        $requestData = $this->request->getJSON(true);
 
         if (!isset($requestData['parametros']) || !is_array($requestData['parametros'])) {
             return $this->failValidationErrors(['menssagem' => 'Parâmetros inválidos'], 400);
