@@ -8,7 +8,8 @@ use CodeIgniter\RESTful\ResourceController;
 class ClienteController extends ResourceController
 {
     protected $modelName = 'App\Models\ClienteModel';
-    protected $format    = 'json';
+    protected $format = 'json';
+
     /**
      * Return an array of resource objects, themselves in array format.
      *
@@ -25,19 +26,24 @@ class ClienteController extends ResourceController
             }
         }
 
-        $data = [
-            'message' => 'success',
-            'data_cliente' => $query->paginate(10),
-            'pagination' => [
-                'current_page' => $this->model->pager->getCurrentPage(),
-                'page_count' => $this->model->pager->getPageCount(),
-                'total_items' => $this->model->pager->getTotal(),
-                'next' => $this->model->pager->getNextPageURI(),
-                'previous' => $this->model->pager->getPreviousPageURI(),
-            ]
+        $response = [
+            'cabecalho' => [
+                'status' => 200,
+                'menssagem' => 'Dados retornados com sucesso',
+            ],
+            'retorno' => [
+                'dados_cliente' => $query->paginate(10),
+                'pagination' => [
+                    'current_page' => $this->model->pager->getCurrentPage(),
+                    'page_count' => $this->model->pager->getPageCount(),
+                    'total_items' => $this->model->pager->getTotal(),
+                    'next' => $this->model->pager->getNextPageURI(),
+                    'previous' => $this->model->pager->getPreviousPageURI(),
+                ]
+            ],
         ];
 
-        return $this->respond($data);
+        return $this->respond($response);
     }
 
     /**
@@ -47,28 +53,39 @@ class ClienteController extends ResourceController
      */
     public function create()
     {
-        $data = (array) $this->request->getVar();
+        $requestData = $this->request->getJSON(true);
+
+        if (!isset($requestData['parametros']) || !is_array($requestData['parametros'])) {
+            return $this->failValidationErrors(['menssagem' => 'Parâmetros inválidos'], 400);
+        }
+
+        $data = $requestData['parametros'];
 
         if (!$this->model->validate($data)) {
-            $response = [
-                'message' => 'Erro ao cadastrar cliente',
+            return $this->failValidationErrors([
+                'menssagem' => 'Erro ao cadastrar cliente',
                 'errors' => $this->model->errors(),
-            ];
-            return $this->failValidationErrors($response, 400);
+            ], 400);
         }
 
         $this->model->insert([
             'nome_razao_social' => esc($data['nome_razao_social']),
-                'cpf_cnpj' => esc($data['cpf_cnpj']),
+            'cpf_cnpj' => esc($data['cpf_cnpj']),
         ]);
 
         $response = [
-            'message' => 'Cliente cadastrado com sucesso',
-            'data' => $data,
+            'cabecalho' => [
+                'status' => 201,
+                'menssagem' => 'Cliente cadastrado com sucesso',
+            ],
+            'retorno' => [
+               $data,
+            ],
         ];
 
-        return $this->respondCreated($response, 200);
+        return $this->respondCreated($response);
     }
+
 
     /**
      * Add or update a model resource, from "posted" properties.
@@ -79,11 +96,17 @@ class ClienteController extends ResourceController
      */
     public function update($id = null)
     {
-        $data = (array) $this->request->getVar();
+        $requestData = $this->request->getJSON(true);
+
+        if (!isset($requestData['parametros']) || !is_array($requestData['parametros'])) {
+            return $this->failValidationErrors(['mensagem' => 'Parâmetros inválidos'], 400);
+        }
+
+        $data = $requestData['parametros'];
 
         if (!$this->model->validate($data)) {
             $response = [
-                'message' => 'Erro ao atualizar cliente',
+                'mensagem' => 'Erro ao atualizar cliente',
                 'errors' => $this->model->errors(),
             ];
             return $this->failValidationErrors($response, 400);
@@ -95,10 +118,14 @@ class ClienteController extends ResourceController
         ]);
 
         $response = [
-            'message' => 'Cliente atualizado com sucesso',
+            'cabecalho' => [
+                'status' => 200,
+                'mensagem' => 'Cliente atualizado com sucesso',
+            ],
+            'retorno' => $data,
         ];
 
-        return $this->respond($response,200);
+        return $this->respond($response);
     }
 
     /**
@@ -114,13 +141,13 @@ class ClienteController extends ResourceController
         $pedido = $pedidoModel->where('cliente_id', $id)->countAllResults();
 
         if ($pedido) {
-            return $this->fail('Cliente possui pedidos cadastrados' );
+            return $this->fail('Cliente possui pedidos cadastrados');
         }
 
         $this->model->delete($id);
 
         $response = [
-            'message' => 'Cliente deletado com sucesso',
+            'mensagem' => 'Cliente deletado com sucesso',
         ];
 
         return $this->respondDeleted($response, 200);
