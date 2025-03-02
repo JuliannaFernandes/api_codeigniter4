@@ -19,7 +19,7 @@ class ClienteModel extends Model
     // Validation
     protected $validationRules    = [
         'nome_razao_social' => 'required',
-        'cpf_cnpj' => 'required|is_unique[cliente.cpf_cnpj]',
+        'cpf_cnpj' => 'required|is_unique[cliente.cpf_cnpj]|numeric',
     ];
 
     //Validation messages
@@ -30,6 +30,7 @@ class ClienteModel extends Model
         'cpf_cnpj' => [
             'required' => 'O campo cpf_cnpj é obrigatório',
             'is_unique' => 'O campo cpf_cnpj deve ser único',
+            'numeric' => 'O campo cpf_cnpj deve ser numérico',
         ],
     ];
     protected bool $allowEmptyInserts = false;
