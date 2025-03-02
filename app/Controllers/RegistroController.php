@@ -29,7 +29,7 @@ class RegistroController extends BaseController
             return $this->respondCreated(['message' => 'Usuário cadastrado com sucesso']);
         } else {
             $response = [
-                'message' => 'Erro ao cadastrar usuário',
+                'mensagem' => 'Erro ao cadastrar usuário',
                 'errors' => $this->validator->getErrors(),
             ];
             return $this->fail($response, 409);

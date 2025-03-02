@@ -27,7 +27,7 @@ class PedidoController extends ResourceController
         }
 
         $data = [
-            'message' => 'success',
+            'mensagem' => 'success',
             'dados_pedido' => $this->model->orderBy('id', 'DESC')->paginate(10),
             'pagination' => [
                 'current_page' => $this->model->pager->getCurrentPage(),
@@ -53,14 +53,14 @@ class PedidoController extends ResourceController
         $produtoModel = new \App\Models\ProdutoModel();
 
         if(!isset($requestData['parametros']) || !is_array($requestData['parametros'])) {
-            return $this->failValidationErrors(['message' => 'Parâmetros inválidos'], 400);
+            return $this->failValidationErrors(['mensagem' => 'Parâmetros inválidos'], 400);
         }
 
         $data = $requestData['parametros'];
 
         if (!$this->model->validate($data)) {
             return $this->failValidationErrors([
-                'message' => 'Erro ao cadastrar pedido',
+                'mensagem' => 'Erro ao cadastrar pedido',
                 'errors' => $this->model->errors(),
             ], 400);
         }
@@ -97,7 +97,7 @@ class PedidoController extends ResourceController
         $response = [
             'cabecalho' => [
                 'status' => 201,
-                'menssagem' => 'Pedido cadastrado com sucesso',
+                'mensagem' => 'Pedido cadastrado com sucesso',
             ],
             'retorno' => [
                 $data,
@@ -121,21 +121,21 @@ class PedidoController extends ResourceController
         $produtoModel = new \App\Models\ProdutoModel();
 
         if (!isset($requestData['parametros']) || !is_array($requestData['parametros'])) {
-            return $this->failValidationErrors(['message' => 'Parâmetros inválidos'], 400);
+            return $this->failValidationErrors(['mensagem' => 'Parâmetros inválidos'], 400);
         }
 
         $data = $requestData['parametros'];
 
         if (!$this->model->validate($data)) {
             return $this->failValidationErrors([
-                'message' => 'Erro ao atualizar pedido',
+                'mensagem' => 'Erro ao atualizar pedido',
                 'errors' => $this->model->errors(),
             ], 400);
         }
 
         if ($data['quantidade'] <= 0) {
         return $this->failValidationErrors([
-            'message' => 'A quantidade deve ser maior que zero',
+            'mensagem' => 'A quantidade deve ser maior que zero',
         ], 400);
         }
 
@@ -184,7 +184,7 @@ class PedidoController extends ResourceController
         $response = [
             'cabecalho' => [
                 'status' => 201,
-                'menssagem' => 'Pedido atualizado com sucesso',
+                'mensagem' => 'Pedido atualizado com sucesso',
             ],
             'retorno' => [
                 $data,
@@ -219,7 +219,7 @@ class PedidoController extends ResourceController
         $this->model->delete($id);
 
         $response = [
-            'message' => 'Pedido deletado com sucesso',
+            'mensagem' => 'Pedido deletado com sucesso',
         ];
 
         return $this->respondDeleted($response);

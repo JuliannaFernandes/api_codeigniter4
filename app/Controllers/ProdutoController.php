@@ -29,7 +29,7 @@ class ProdutoController extends ResourceController
         $response = [
             'cabecalho' => [
                 'status' => 200,
-                'menssagem' => 'Dados retornados com sucesso',
+                'mensagem' => 'Dados retornados com sucesso',
             ],
             'retorno' => [
                 'dados_produto' => $query->paginate(10),
@@ -56,14 +56,14 @@ class ProdutoController extends ResourceController
         $requestData = $this->request->getJSON(true);
 
         if (!isset($requestData['parametros']) || !is_array($requestData['parametros'])) {
-            return $this->failValidationErrors(['menssagem' => 'Parâmetros inválidos'], 400);
+            return $this->failValidationErrors(['mensagem' => 'Parâmetros inválidos'], 400);
         }
 
         $data = $requestData['parametros'];
 
         if (!$this->model->validate($data)) {
             $response = [
-                'menssagem' => 'Erro ao cadastrar produto',
+                'mensagem' => 'Erro ao cadastrar produto',
                 'errors' => $this->model->errors(),
             ];
             return $this->failValidationErrors($response, 400);
@@ -79,7 +79,7 @@ class ProdutoController extends ResourceController
         $response = [
             'cabecalho' => [
                 'status' => 201,
-                'menssagem' => 'Produto cadastrado com sucesso',
+                'mensagem' => 'Produto cadastrado com sucesso',
             ],
             'retorno' => [
                 $data,
@@ -101,14 +101,14 @@ class ProdutoController extends ResourceController
         $requestData = $this->request->getJSON(true);
 
         if (!isset($requestData['parametros']) || !is_array($requestData['parametros'])) {
-            return $this->failValidationErrors(['menssagem' => 'Parâmetros inválidos'], 400);
+            return $this->failValidationErrors(['mensagem' => 'Parâmetros inválidos'], 400);
         }
 
         $data = $requestData['parametros'];
 
         if (!$this->model->validate($data)) {
             $response = [
-                'menssagem' => 'Erro ao atualizar produto',
+                'mensagem' => 'Erro ao atualizar produto',
                 'errors' => $this->model->errors(),
             ];
             return $this->failValidationErrors($response, 400);
@@ -124,7 +124,7 @@ class ProdutoController extends ResourceController
         $response = [
             'cabecalho' => [
                 'status' => 200,
-                'menssagem' => 'Produto atualizado com sucesso',
+                'mensagem' => 'Produto atualizado com sucesso',
             ],
             'retorno' => [
                 $data,
@@ -153,7 +153,7 @@ class ProdutoController extends ResourceController
         $this->model->delete($id);
 
         $response = [
-            'menssagem' => 'Produto deletado com sucesso',
+            'mensagem' => 'Produto deletado com sucesso',
         ];
 
         return $this->respondDeleted($response, 200);

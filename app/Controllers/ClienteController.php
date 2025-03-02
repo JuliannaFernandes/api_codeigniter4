@@ -29,7 +29,7 @@ class ClienteController extends ResourceController
         $response = [
             'cabecalho' => [
                 'status' => 200,
-                'menssagem' => 'Dados retornados com sucesso',
+                'mensagem' => 'Dados retornados com sucesso',
             ],
             'retorno' => [
                 'dados_cliente' => $query->paginate(10),
@@ -56,14 +56,14 @@ class ClienteController extends ResourceController
         $requestData = $this->request->getJSON(true);
 
         if (!isset($requestData['parametros']) || !is_array($requestData['parametros'])) {
-            return $this->failValidationErrors(['menssagem' => 'Parâmetros inválidos'], 400);
+            return $this->failValidationErrors(['mensagem' => 'Parâmetros inválidos'], 400);
         }
 
         $data = $requestData['parametros'];
 
         if (!$this->model->validate($data)) {
             return $this->failValidationErrors([
-                'menssagem' => 'Erro ao cadastrar cliente',
+                'mensagem' => 'Erro ao cadastrar cliente',
                 'errors' => $this->model->errors(),
             ], 400);
         }
@@ -76,7 +76,7 @@ class ClienteController extends ResourceController
         $response = [
             'cabecalho' => [
                 'status' => 201,
-                'menssagem' => 'Cliente cadastrado com sucesso',
+                'mensagem' => 'Cliente cadastrado com sucesso',
             ],
             'retorno' => [
                $data,
