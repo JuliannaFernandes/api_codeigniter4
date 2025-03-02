@@ -141,7 +141,7 @@ class ClienteController extends ResourceController
         $pedido = $pedidoModel->where('cliente_id', $id)->countAllResults();
 
         if ($pedido) {
-            return $this->fail('Cliente possui pedidos cadastrados');
+            return $this->fail('Cliente possui pedidos cadastrados', 409);
         }
 
         $this->model->delete($id);
