@@ -1,68 +1,114 @@
-# CodeIgniter 4 Application Starter
+# API RESTful com CodeIgniter 4
 
-## What is CodeIgniter?
+Este repositório contém uma API RESTful desenvolvida com **CodeIgniter 4** e **MySQL**.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+## Tecnologias Utilizadas
+- **PHP 8.1+**
+- **CodeIgniter 4**
+- **MySQL**
+- **JWT Authentication**
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+## Requisitos
+Antes de rodar a API, certifique-se de ter:
+- PHP 8.1 ou superior instalado
+- Composer instalado
+- MySQL configurado
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+## Instalação e Configuração
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/JuliannaFernandes/api_codeigniter4.git
+   ```
 
-## Installation & updates
+2. Na pasta do projeto, instale as dependências:
+   ```bash
+   composer install
+   ```
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+3. Configure o banco de dados no arquivo **.env** (caso não exista, copie de .env.example):
+   ```bash
+   cp .env.example .env
+   ```
+   Edite as seguintes configurações:
+   ```ini
+   database.default.hostname = localhost
+   database.default.database = api_ci4
+   database.default.username = usuario
+   database.default.password = senha
+   database.default.DBDriver = MySQLi
+   ```
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+4. Execute as migrations para criar as tabelas:
+   ```bash
+   php spark migrate
+   ```
 
-## Setup
+5. Inicie o servidor local:
+   ```bash
+   php spark serve
+   ```
+   
+## Endpoints
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+**Clientes**
 
-## Important Change with index.php
+- GET /cliente → Lista clientes (com paginação e filtros)
+- POST /cliente → Cria um novo cliente
+- PUT /cliente/{id} → Atualiza um cliente existente
+- DELETE /cliente/{id} → Remove um cliente  
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+**Produtos**
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+- GET /produto → Lista produtos (com paginação e filtros)
+- POST /produto → Cria um novo produto
+- PUT /produto/{id} → Atualiza um produto existente
+- DELETE /produto/{id} → Remove um produto
+- 
+**Pedidos**
 
-**Please** read the user guide for a better explanation of how CI4 works!
+- GET /pedido → Lista pedidos de compra (com paginação e filtros)
+- POST /pedido → Cria um novo pedido de compra
+- PUT /pedido/{id} → Atualiza um pedido existente
+- DELETE /pedido/{id} → Remove um pedido
 
-## Repository Management
+**Usuários e Autenticação**
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+POST /registro → Registra um novo usuário
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+POST /login → Realiza login e gera token JWT
 
-## Server Requirements
+GET /usuario → Retorna dados do usuário autenticado
 
-PHP version 8.1 or higher is required, with the following extensions installed:
+## Filtros e Paginação
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+Todos os endpoints GET aceitam filtros dinâmicos baseados nos campos da entidade correspondente.
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
+**Uso de Filtros**
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+Os filtros podem ser passados como parâmetros na URL. Exemplo:
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+```
+/cliente?nome_razao_social=João&cpf_cnpj=12345678900
+```
+Isso retornará apenas os clientes que possuem nome_razao_social contendo "João" e cpf_cnpj exatamente igual a "12345678900".
+
+**Paginação**
+
+A API suporta paginação utilizando o parâmetro page. Por padrão, retorna 10 registros por página.
+```
+/cliente?page=2
+```
+
+## Autenticação JWT
+
+A API usa JWT para autenticação. Para acessar endpoints protegidos:
+```
+Gere um token em /login com suas credenciais.
+```
+Use o token no cabeçalho:
+```
+Authorization: Bearer SEU_TOKEN_JWT
+```
+
+Agora sua API está pronta para ser usada! 
