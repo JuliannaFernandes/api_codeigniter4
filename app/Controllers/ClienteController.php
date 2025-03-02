@@ -125,7 +125,7 @@ class ClienteController extends ResourceController
             'retorno' => $data,
         ];
 
-        return $this->respond($response);
+        return $this->respondDeleted($response);
     }
 
     /**
